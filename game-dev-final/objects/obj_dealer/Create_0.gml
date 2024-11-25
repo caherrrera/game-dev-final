@@ -17,10 +17,8 @@ hand_x_offset = 100;
 start_x = room_width * 0.1;
 num_cards = 8;
 move_timer = 0;
-//match = false; 
 
 in_player_hand = false; 
-//has_compared = false; 
 
 comp_score = 0;
 player_score = 0; 
@@ -37,7 +35,6 @@ global.player_select = [];
 zone_deck = ds_list_create(); //snap to drop in place 
 global.zone_pos = []; 
 
-//dealing = true; 
 
 for(var i = 0; i < num_cards; i++) {
 	var new_card = instance_create_layer(x,y,"Cards", obj_card);
