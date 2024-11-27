@@ -8,10 +8,8 @@ switch(global.state){
 		var _comp_num = ds_list_size(comp_hand);
 		if(_comp_num < 8){
 			if (ds_list_size(deck) > 0) {
-                // Get the last card from the deck without creating a new instance
                 var _comp_card = ds_list_find_value(deck, ds_list_size(deck) - 1);
                 
-                // Move this card to the computer hand
                 ds_list_delete(deck, ds_list_size(deck) - 1); // Remove from deck
                 ds_list_add(comp_hand, _comp_card); // Add to computer hand
 
@@ -73,50 +71,38 @@ switch(global.state){
 		//show_debug_message("player choose state");
 		//show_debug_message("choose state list size:" + string(ds_list_size(global.player_hand)));
 
+
 		if(obj_button.is_pressed){ //player done placing 
-			var select_length = array_length_1d(global.player_select);
-			var half_length = floor(select_length/2);//int
-		
-			for (var i = 0; i < half_length; i++){
-				array_delete(global.player_select, 0, 1);	
-				} 
 			global.state = STATES.COMPARE;
-				
 			obj_button.is_pressed = false; 
 		}
-	//show_debug_message("select size after trimming:" + string(array_length_1d(global.player_select)));
+		
 	break;
 	
 	case STATES.COMPARE:
 	//show_debug_message("COMPARETIMEEE")
-	//show_debug_message("compare list size:" + string(ds_list_size(global.player_hand)));
+	show_debug_message("compare: player hand size:" + string(ds_list_size(global.player_hand)));
 		var tolerance = 15; //how close x pos are 
 		var unmatched_cards = 0; 
-		//show_debug_message("playerlength:"+string(array_length_1d(global.player_select)));
-		//show_debug_message("comp_hand length: " + string(ds_list_size(comp_hand)));
-		show_debug_message(array_length_1d(global.player_select));
+		show_debug_message("playerselectlength:"+string(array_length_1d(global.player_select)));
+		show_debug_message("comp_hand length: " + string(ds_list_size(comp_hand)));
+
 		for (var i = 0; i < array_length_1d(global.player_select); i++) {
-			//show_debug_message("array run");
 			player_x = global.player_select[i].x;
 			var paired = false;
 			var player_card = global.player_select[i];
 			
 			for (var j = 0; j < ds_list_size(comp_hand); j++) {
-				//show_debug_message("comp hand ");
 				var comp_card = ds_list_find_value(comp_hand, j);
-				
-				//show_debug_message("Comparing comp_card.x: " + string(comp_card.x) + " with player_x: " + string(player_x));
-
-				
+		
 				if (abs(comp_card.x - player_x) <= tolerance) { //dist
 					paired = true; 	//find what card player has matched it to 
 					//show_debug_message("paired:"+string(comp_card.x)+string(player_x));
-					//show_debug_message("tolerance  ");
 					if(player_card.face_index == comp_card.face_index) {
-						//match = true;
 						comp_card.face_up = true;
 						player_card.matched = true; 
 						show_debug_message("match!!"+string(player_card.face_index)+string(comp_card.face_index));
+					
 					} else {
 						show_debug_message("no match");
 						unmatched_cards++; 
@@ -126,25 +112,22 @@ switch(global.state){
 				}
 			}
 		}
-		
-		var select_length = array_length_1d(global.player_select);
 
 		if (unmatched_cards > 0) {
-			audio_play_sound(snd_match, 1, false);
+			audio_play_sound(snd_match, 1, false); 
 	        global.state = STATES.RESOLVE;
 	    } else if (unmatched_cards == 8) {
 			audio_play_sound(snd_no_match, 1, false);
 			global.state = STATES.RESOLVE;
 		} else {
 			audio_play_sound(snd_win, 1, false);
-	        global.state = STATES.RESHUFFLE;
+	        global.state = STATES.ENDGAME;
 	    }
 		
 	break;
 	
 	case STATES.RESOLVE:
-	//show_debug_message("resolve list size:" + string(ds_list_size(global.player_hand)));
-	//	show_debug_message("resolve state");
+	//show_debug_message("**RESOLVE**");
 		global.player_select = []; //clear array to select again
 		
 		var og_y = room_height * 0.7;  
@@ -154,24 +137,25 @@ switch(global.state){
 			if(!player_card.matched){
 				player_card.target_y = og_y;
 				player_card.target_x = player_card.target_x;  
+				
 				player_card.in_player_hand = true; 
-				show_debug_message("player_hand cards reset");
+				
+				player_card.in_zone = false;
+				player_card.dropped = false; 
 			}
 		}
 		
 		if (ds_list_size(global.player_hand) > 0) {
+			//show_debug_message("end of resolve : playerhand size:" + string(ds_list_size(global.player_hand)));
+			//show_debug_message("end of resolve : playerselect size:" + string(array_length_1d(global.player_select)));
 			global.state = STATES.PLAYER_CHOOSE;
 		}
 		
 	break;
 	
-	case STATES.RESHUFFLE:
-	//add cards back to decks --> comp_deal state
-	//show_debug_message("reshuffle state");
-
+	case STATES.ENDGAME:
+	
 		room_goto_next();
-		
-		global.state = STATES.COMP_DEAL;
 		
 	break;
 }

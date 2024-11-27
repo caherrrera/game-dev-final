@@ -7,7 +7,7 @@ enum STATES {
 	PLAYER_CHOOSE,
 	COMPARE,
 	RESOLVE,
-	RESHUFFLE
+	ENDGAME
 }
 
 global.state = STATES.COMP_DEAL;
@@ -23,7 +23,7 @@ in_player_hand = false;
 comp_score = 0;
 player_score = 0; 
 
-//lists
+//lists and arrays oh my
 deck = ds_list_create();
 player_deck = ds_list_create();
 
@@ -32,7 +32,7 @@ global.player_hand = ds_list_create();
 
 global.player_select = []; 
 
-zone_deck = ds_list_create(); //snap to drop in place 
+zone_deck = ds_list_create(); 
 global.zone_pos = []; 
 
 

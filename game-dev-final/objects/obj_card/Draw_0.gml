@@ -1,6 +1,7 @@
 /// @description Insert description here
 // You can write your code in this editor
 
+//#lerping
 if(abs(x - target_x) > 1){
 	x = lerp(x, target_x, 0.2);
 } else {
