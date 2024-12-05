@@ -52,15 +52,28 @@ switch(global.state){
                 ds_list_add(global.player_hand, _dealt_card);
                 
                 _dealt_card.target_x = x + room_width / 4 + _player_num * hand_x_offset;
-                _dealt_card.target_y = room_height * 0.7;
+                _dealt_card.target_y = 530; //used to b roomheight * 0.7
+				//show_debug_message("player_deal target y: "+string(_dealt_card.target_y));
 				audio_play_sound(snd_move, 1, false);
                 
-                _dealt_card.in_player_hand = true; 
+	            _dealt_card.in_player_hand = true; 
+				
+					//if(_dealt_card.y == 530 && _player_num==8){ //was moving on before last card could be placed
+					//	cards_set = true;
+					//}
+				}
+				show_debug_message("y" +  string(_dealt_card.y));
+				show_debug_message("num" + string(_player_num));
+
 			}
+			for(i = 0; i < ds_list_size(global.player_hand); i++){
+					if(i == 7){
+						last_y = global.player_hand[| i].y;
+					}
+				}
 			
-			}
-		}
-		 else if(ds_list_size(global.player_hand) == 8) {
+		}	
+		 if(last_y == 530) {
 				global.state = STATES.PLAYER_CHOOSE;	
 			//show_debug_message("list size:" + string(ds_list_size(player_hand)));
 		}
@@ -102,27 +115,30 @@ switch(global.state){
 						comp_card.face_up = true;
 						player_card.matched = true; 
 						show_debug_message("match!!"+string(player_card.face_index)+string(comp_card.face_index));
+						part_particles_create(parts,player_card.x+41,player_card.y+66,w_glow,10);
 					
 					} else {
 						show_debug_message("no match");
 						unmatched_cards++; 
 						ds_list_add(global.player_hand, player_card);
+						//part_particles_create(parts,player_card.x+41,player_card.y+66,r_glow,10);
 					}
 					break; //exit loop
 				}
 			}
 		}
+		
 
-		if (unmatched_cards > 0) {
-			audio_play_sound(snd_match, 1, false); 
+		if (unmatched_cards == array_length_1d(global.player_select)) { //no selected cards are matched
+			audio_play_sound(snd_no_match, 1, false); 
 	        global.state = STATES.RESOLVE;
-	    } else if (unmatched_cards == 8) {
-			audio_play_sound(snd_no_match, 1, false);
-			global.state = STATES.RESOLVE;
-		} else {
-			audio_play_sound(snd_win, 1, false);
+	    } else if(unmatched_cards == 0) {
+			audio_play_sound(snd_win, 1, false); //all cards match
 	        global.state = STATES.ENDGAME;
-	    }
+		}	else if (unmatched_cards < array_length_1d(global.player_select)) { //some selected cards are matched
+			audio_play_sound(snd_match, 1, false);
+			global.state = STATES.RESOLVE;
+			}
 		
 	break;
 	
@@ -143,6 +159,9 @@ switch(global.state){
 				player_card.in_zone = false;
 				player_card.dropped = false; 
 			}
+				if(player_card.target_y == og_y){
+				part_particles_create(parts,player_card.target_x+41,player_card.target_y+66,r_glow,10);	
+			}
 		}
 		
 		if (ds_list_size(global.player_hand) > 0) {
@@ -154,8 +173,19 @@ switch(global.state){
 	break;
 	
 	case STATES.ENDGAME:
+		end_timer--;
+		
+		if(!played){
+			for(i = 0; i < array_length_1d(global.player_select); i++){
+				var _card = array_get(global.player_select, i);
+				part_particles_create(parts, _card.x+41, _card.y+66, g_glow,10);
+				played = true;
+			}
+		}
 	
-		room_goto_next();
+		if(end_timer == 0){
+			room_goto_next();
+		}
 		
 	break;
 }

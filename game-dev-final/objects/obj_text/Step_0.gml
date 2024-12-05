@@ -3,7 +3,7 @@
 
 if(room == rm_start){
 	if(!audio_is_playing(snd_bg_music)){
-		audio_play_sound(snd_bg_music, 0, true);
+		//audio_play_sound(snd_bg_music, 0, true);
 		//bg music https://www.youtube.com/watch?v=8SIrVXr9hjA
 		audio_sound_gain(snd_bg_music, 1, 1);
 	}

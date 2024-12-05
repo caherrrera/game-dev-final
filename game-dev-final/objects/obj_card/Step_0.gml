@@ -10,17 +10,19 @@ if(in_player_hand){
 					og_x = x;
 					og_y = y;
 					og_y_set = true; 
-					//show_debug_message("Original x=" + string(og_x) + ", y=" + string(og_y));
+					//show_debug_message("Original y=" + string(og_y));
 				}
 				
 				if(!in_zone){
 		                if (position_meeting(mouse_x, mouse_y, id)) {
 		                    if (target_y != og_y - 20) {
 		                        target_y = og_y - 20; 
+								//show_debug_message("hovering y=" + string(target_y));
 		                    }
 		                } else {
 		                    if (target_y != og_y) {
 		                        target_y = og_y;
+								//show_debug_message("not hovering y=" + string(target_y));
 		                    }
 		                }
 				}
@@ -33,7 +35,8 @@ if(in_player_hand){
 	
 			if(dragging){
 				target_x = mouse_x - sprite_width/2;
-				target_y = mouse_y - sprite_height/2;  
+				target_y = mouse_y - sprite_height/2; 
+				depth = -100; //if moving, closest to camera
 				//show_debug_message("Dragging: Current position: x=" + string(x) + ", y=" + string(y));
 			} 
 		
