@@ -84,6 +84,7 @@ switch(global.state){
 		//show_debug_message("player choose state");
 		//show_debug_message("choose state list size:" + string(ds_list_size(global.player_hand)));
 
+			global.char_sprite = spr_choosing;	
 
 		if(obj_button.is_pressed){ //player done placing 
 			global.state = STATES.COMPARE;
@@ -115,7 +116,8 @@ switch(global.state){
 						comp_card.face_up = true;
 						player_card.matched = true; 
 						show_debug_message("match!!"+string(player_card.face_index)+string(comp_card.face_index));
-						part_particles_create(parts,player_card.x+41,player_card.y+66,w_glow,10);
+						part_particles_create(parts,player_card.x+41,player_card.y+66,w_glow,8);
+						global.char_sprite = spr_match;
 					
 					} else {
 						show_debug_message("no match");
@@ -128,21 +130,25 @@ switch(global.state){
 			}
 		}
 		
+		if(compare_timer==0){
 
-		if (unmatched_cards == array_length_1d(global.player_select)) { //no selected cards are matched
-			audio_play_sound(snd_no_match, 1, false); 
-	        global.state = STATES.RESOLVE;
-	    } else if(unmatched_cards == 0) {
-			audio_play_sound(snd_win, 1, false); //all cards match
-	        global.state = STATES.ENDGAME;
-		}	else if (unmatched_cards < array_length_1d(global.player_select)) { //some selected cards are matched
-			audio_play_sound(snd_match, 1, false);
-			global.state = STATES.RESOLVE;
+			if (unmatched_cards == array_length_1d(global.player_select)) { //no selected cards are matched
+				audio_play_sound(snd_no_match, 1, false); 
+		        global.state = STATES.RESOLVE;
+		    } else if(unmatched_cards == 0) {
+				audio_play_sound(snd_win, 1, false); //all cards match
+		        global.state = STATES.ENDGAME;
+			}	else if (unmatched_cards < array_length_1d(global.player_select)) { //some selected cards are matched
+				audio_play_sound(snd_match, 1, false);
+				global.state = STATES.RESOLVE;
+				}
 			}
+
 		
 	break;
 	
 	case STATES.RESOLVE:
+	global.char_sprite = spr_no_match;
 	//show_debug_message("**RESOLVE**");
 		global.player_select = []; //clear array to select again
 		
@@ -160,19 +166,22 @@ switch(global.state){
 				player_card.dropped = false; 
 			}
 				if(player_card.target_y == og_y){
-				part_particles_create(parts,player_card.target_x+41,player_card.target_y+66,r_glow,10);	
+				part_particles_create(parts,player_card.target_x+41,player_card.target_y+66,r_glow,8);	
 			}
 		}
 		
-		if (ds_list_size(global.player_hand) > 0) {
-			//show_debug_message("end of resolve : playerhand size:" + string(ds_list_size(global.player_hand)));
-			//show_debug_message("end of resolve : playerselect size:" + string(array_length_1d(global.player_select)));
-			global.state = STATES.PLAYER_CHOOSE;
+		if(compare_timer == 50){
+			if (ds_list_size(global.player_hand) > 0) {
+				//show_debug_message("end of resolve : playerhand size:" + string(ds_list_size(global.player_hand)));
+				//show_debug_message("end of resolve : playerselect size:" + string(array_length_1d(global.player_select)));
+				global.state = STATES.PLAYER_CHOOSE;
+			}
 		}
 		
 	break;
 	
 	case STATES.ENDGAME:
+		global.char_sprite = spr_win;
 		end_timer--;
 		
 		if(!played){
@@ -194,4 +203,9 @@ switch(global.state){
 move_timer++;
 if(move_timer == 16){
 	move_timer = 0; 	
+}
+
+compare_timer++;
+if(compare_timer == 100){
+	compare_timer = 0; 	
 }

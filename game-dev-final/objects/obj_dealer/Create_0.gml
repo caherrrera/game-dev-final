@@ -19,6 +19,7 @@ num_cards = 8;
 move_timer = 0;
 
 end_timer = 100;
+compare_timer = 0;
 played = false;
 
 in_player_hand = false; 
@@ -101,7 +102,7 @@ part_system_depth(parts,30);
 
 w_glow = part_type_create(); //match effect
 part_type_shape(w_glow, pt_shape_flare);
-part_type_size(w_glow, 1, 2, 0,0.5);
+part_type_size(w_glow, 1, 1.5, 0,0.5);
 part_type_speed(w_glow, 0,0.5, 0,0);
 part_type_direction(w_glow, 0,360, 0,0);
 part_type_life(w_glow, 30, 60);
@@ -111,13 +112,13 @@ part_type_blend(w_glow, true);
 
 r_glow = part_type_create(); //no match effect
 part_type_shape(r_glow, pt_shape_flare);
-part_type_size(r_glow, 1, 2, 0,0.5);
+part_type_size(r_glow, 1, 1.5, 0,0.5);
 part_type_speed(r_glow, 0,0.5, 0,0);
 part_type_direction(r_glow, 0,360, 0,0);
-part_type_life(r_glow, 30, 60);
+part_type_life(r_glow, 15, 30);
 part_type_color1(r_glow, c_red);
 part_type_alpha3(r_glow, 0, 0.3, 0); 
-//part_type_blend(r_glow, true);
+part_type_blend(r_glow, true);
 
 g_glow = part_type_create(); //all match effect
 part_type_shape(g_glow, pt_shape_flare);
